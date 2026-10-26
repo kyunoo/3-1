@@ -1,325 +1,348 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>대전하기중학교 3학년 1반</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px 20px 80px 20px; background-color: #f4f6f9; color: #333; position: relative; min-height: 100vh; box-sizing: border-box; }
-    header { text-align: center; margin-bottom: 20px; }
-    h1 { color: #1a365d; margin-bottom: 5px; }
-    .sub-title { color: #2563eb; font-weight: bold; font-size: 18px; margin-bottom: 5px; }
-    
-    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .card h2 { margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
-    
-    .date-click { font-size: 14px; color: #2563eb; cursor: pointer; text-decoration: underline; font-weight: normal; }
-    .meal-content { line-height: 1.8; white-space: pre-line; font-size: 15px; }
-    
-    .schedule-item { display: flex; padding: 8px 10px; background-color: #f8fafc; border-radius: 6px; border-left: 4px solid #2563eb; margin-bottom: 8px; }
-    .period { font-weight: bold; width: 60px; color: #2563eb; }
-    .subject { font-weight: 500; }
-    
-    /* 시간표 수정 양식 스타일 */
-    .edit-row { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
-    .edit-row label { font-size: 14px; font-weight: bold; width: 50px; color: #2563eb; }
-    .edit-input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-    .save-btn { background: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%; font-size: 15px; }
-    
-    .day-selector { display: flex; gap: 5px; margin-bottom: 15px; }
-    .day-btn { flex: 1; padding: 8px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; cursor: pointer; }
-    .day-btn.active { background: #2563eb; color: white; border-color: #2563eb; font-weight: bold; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>잔소리 투두리스트</title>
+    <style>
+        body {
+            background-color: #b2c7d9;
+            font-family: 'Apple SD Gothic Neo', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    /* 월간 급식 모달 */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; }
-    .close-btn { font-size: 24px; cursor: pointer; border: none; background: none; color: #64748b; }
-    .monthly-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-    .day-meal-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; font-size: 12px; }
-    .day-meal-box strong { color: #2563eb; display: block; margin-bottom: 4px; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; }
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 600px;
+            background-color: #abc1de;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
 
-    /* 하단 관리자 수정 버튼 */
-    .admin-fixed-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 16px;
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 20px;
-      color: #334155;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 999;
-      transition: all 0.2s;
-    }
-    .admin-fixed-btn:hover {
-      background: #f1f5f9;
-      border-color: #2563eb;
-      color: #2563eb;
-    }
-  </style>
+        /* 1. 대화상대 설정 화면 */
+        #setup-screen {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            gap: 15px;
+        }
+
+        #setup-screen h2 {
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 22px;
+        }
+
+        #setup-screen input {
+            width: 80%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        #setup-screen button {
+            width: 85%;
+            background-color: #fee500;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* 2. 실제 채팅방 화면 (초기엔 숨김) */
+        #chat-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            background-color: #9bbbd4;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            background-color: #ffeb3b;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            max-width: 80%;
+        }
+
+        .message-row.mom {
+            align-self: flex-start;
+        }
+
+        .message-row.my {
+            align-self: flex-end;
+            justify-content: flex-end;
+        }
+
+        .message {
+            padding: 10px 14px;
+            border-radius: 15px;
+            font-size: 14px;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .message.mom {
+            background-color: #ffffff;
+            border-top-left-radius: 2px;
+        }
+
+        .message.my {
+            background-color: #fee500;
+            border-top-right-radius: 2px;
+        }
+
+        .message-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 11px;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .read-badge {
+            color: #d4a017;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .chat-input-area {
+            background-color: #ffffff;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input-area button {
+            background-color: #fee500;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>🏫 대전하기중학교</h1>
-    <div class="sub-title">3학년 1반 전용</div>
-  </header>
+    <div class="app-container">
+        <!-- [화면 1] 대화상대 설정 화면 -->
+        <div id="setup-screen">
+            <h2>대화상대 설정</h2>
+            <input type="text" id="partnerInput" placeholder="대화상대 이름 (예: 엄마)" value="엄마">
+            <button onclick="startChat()">확인</button>
+        </div>
 
-  <!-- 급식 카드 -->
-  <div class="card">
-    <h2>
-      🍱 오늘의 급식 
-      <span class="date-click" onclick="openMealModal()" id="mealDateBtn">날짜 불러오는 중... 📅</span>
-    </h2>
-    <div id="mealResult" class="meal-content">급식을 불러오는 중...</div>
-  </div>
-
-  <!-- 시간표 카드 -->
-  <div class="card">
-    <h2>
-      <span>📅 시간표 <span id="selectedDayText" style="font-size: 14px; color: #64748b;"></span></span>
-    </h2>
-
-    <div class="day-selector">
-      <button class="day-btn" onclick="selectDay(1)">월</button>
-      <button class="day-btn" onclick="selectDay(2)">화</button>
-      <button class="day-btn" onclick="selectDay(3)">수</button>
-      <button class="day-btn" onclick="selectDay(4)">목</button>
-      <button class="day-btn" onclick="selectDay(5)">금</button>
-    </div>
-
-    <!-- 게스트용 조회 화면 -->
-    <div id="viewScheduleArea" class="schedule-list"></div>
-
-    <!-- 관리자용 수정 화면 -->
-    <div id="editScheduleArea" style="display: none; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-      <div style="font-weight: bold; color: #1e293b; margin-bottom: 10px; font-size: 15px;">✏️ 과목명 수정하기</div>
-      <div id="inputForm"></div>
-      <button class="save-btn" onclick="saveSchedule()">수정사항 저장하기</button>
-    </div>
-  </div>
-
-  <!-- 월간 급식 모달 -->
-  <div id="mealModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle" style="margin:0;">이번 달 전체 급식표</h3>
-        <button class="close-btn" onclick="closeMealModal()">&times;</button>
-      </div>
-      <div id="monthlyMealGrid" class="monthly-grid">급식표를 불러오는 중...</div>
-    </div>
-  </div>
-
-  <!-- 우측 하단 관리자 수정 버튼 -->
-  <button class="admin-fixed-btn" onclick="toggleAdminMode()">⚙️ 시간표 수정</button>
-
-  <script>
-    const API_KEY = "7ded97c5c139416b80d2d044458bfed5";
-    const ATPT_CODE = "G10";
-    const SCHOOL_CODE = "7451051"; 
-    const ADMIN_PW = "1234";
-
-    const today = new Date();
-    const YYYY = today.getFullYear();
-    const MM = String(today.getMonth() + 1).padStart(2, '0');
-    const DD = String(today.getDate()).padStart(2, '0');
-    const YYYYMM = `${YYYY}${MM}`;
-
-    let currentDay = today.getDay(); // 1:월 ~ 5:금
-    if (currentDay === 0 || currentDay === 6) currentDay = 1;
-
-    const maxPeriods = { 1: 6, 2: 7, 3: 7, 4: 6, 5: 6 };
-
-    // 3학년 1반 기본 시간표
-    const defaultSchedule = {
-      1: ["체육", "사회", "진직", "과학", "영어", "도덕"],
-      2: ["스포", "영어", "역사", "국어1", "기가", "음악", "수학"],
-      3: ["체육", "국어", "사회", "과학1", "과학2", "도덕", ""],
-      4: ["국어2", "미술", "미술", "영어", "수학", "기가"],
-      5: ["국어2", "수학", "체육", "도덕", "영회", "과학1"]
-    };
-
-    function getStoredSchedule() {
-      const stored = localStorage.getItem("hagi_3_1_schedule");
-      return stored ? JSON.parse(stored) : defaultSchedule;
-    }
-
-    window.onload = () => {
-      document.getElementById("mealDateBtn").textContent = `${YYYY}년 ${MM}월 ${DD}일 [월간 급식표]`;
-      fetchTodayMeal();
-      selectDay(currentDay);
-    };
-
-    // 오늘의 급식
-    async function fetchTodayMeal() {
-      const mealDiv = document.getElementById("mealResult");
-      const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_CODE}&SD_SCHUL_CODE=${SCHOOL_CODE}&MLSV_YMD=${YYYY}${MM}${DD}`;
-
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.mealServiceDietInfo) {
-          const rawDish = data.mealServiceDietInfo[1].row[0].DDISH_NM;
-          mealDiv.textContent = rawDish.replace(/<br\/>/g, '\n').replace(/\([0-9.]+\)/g, '');
-        } else {
-          mealDiv.textContent = "오늘의 급식 정보가 없습니다. (주말/휴교일)";
-        }
-      } catch (err) {
-        mealDiv.textContent = "급식 불러오기 실패";
-      }
-    }
-
-    // 이번 달 전체 급식
-    async function openMealModal() {
-      const modal = document.getElementById("mealModal");
-      const grid = document.getElementById("monthlyMealGrid");
-      document.getElementById("modalTitle").textContent = `${YYYY}년 ${Number(MM)}월 전체 급식표`;
-      
-      modal.style.display = "flex";
-      grid.innerHTML = "불러오는 중...";
-
-      const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_CODE}&SD_SCHUL_CODE=${SCHOOL_CODE}&MLSV_YM=${YYYYMM}`;
-
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (data.mealServiceDietInfo) {
-          const rows = data.mealServiceDietInfo[1].row;
-          const filteredRows = rows.filter(r => r.MLSV_YMD.startsWith(YYYYMM));
-
-          if (filteredRows.length > 0) {
-            grid.innerHTML = filteredRows.map(r => {
-              const dayNum = r.MLSV_YMD.substring(6, 8);
-              const dish = r.DDISH_NM.replace(/<br\/>/g, '<br/>').replace(/\([0-9.]+\)/g, '');
-              return `
-                <div class="day-meal-box">
-                  <strong>${Number(dayNum)}일</strong>
-                  <div>${dish}</div>
-                </div>
-              `;
-            }).join('');
-          } else {
-            grid.textContent = "이번 달 급식 데이터가 없습니다.";
-          }
-        } else {
-          grid.textContent = "이번 달 급식 데이터가 없습니다.";
-        }
-      } catch (err) {
-        grid.textContent = "월간 급식 정보를 불러오지 못했습니다.";
-      }
-    }
-
-    function closeMealModal() {
-      document.getElementById("mealModal").style.display = "none";
-    }
-
-    // 요일 선택
-    function selectDay(dayNum) {
-      currentDay = dayNum;
-      const dayNames = ["", "월요일", "화요일", "수요일", "목요일", "금요일"];
-      document.getElementById("selectedDayText").textContent = `(${dayNames[dayNum]} - ${maxPeriods[dayNum]}교시)`;
-      
-      document.querySelectorAll(".day-btn").forEach((btn, idx) => {
-        btn.classList.toggle("active", idx + 1 === dayNum);
-      });
-
-      const editArea = document.getElementById("editScheduleArea");
-      if (editArea.style.display === "block") {
-        renderScheduleForm();
-      } else {
-        renderScheduleView();
-      }
-    }
-
-    function renderScheduleView() {
-      const scheduleData = getStoredSchedule();
-      const todayList = scheduleData[currentDay] || [];
-      const viewDiv = document.getElementById("viewScheduleArea");
-      const count = maxPeriods[currentDay];
-
-      let html = "";
-      for (let i = 0; i < count; i++) {
-        const subject = todayList[i] || "";
-        if (subject) {
-          html += `
-            <div class="schedule-item">
-              <span class="period">${i + 1}교시</span>
-              <span class="subject">${subject}</span>
+        <!-- [화면 2] 실제 채팅방 화면 -->
+        <div id="chat-screen">
+            <div class="chat-header">
+                <div class="profile-img">👩</div>
+                <div id="partnerTitle">엄마</div>
             </div>
-          `;
+
+            <div class="chat-messages" id="chatMessages"></div>
+
+            <div class="chat-input-area">
+                <input type="text" id="todoInput" placeholder="메세지 입력" onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">전송</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todoList = [];
+        let partnerName = "엄마";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+        });
+
+        function showSystemNotification(text) {
+            if (Notification.permission === "granted") {
+                new Notification(`${partnerName}의 메시지`, {
+                    body: text,
+                    icon: "https://cdn-icons-png.flaticon.com/512/4140/4140047.png"
+                });
+            }
         }
-      }
 
-      viewDiv.innerHTML = html || "<div style='color:#888; text-align:center;'>등록된 시간표가 없습니다.</div>";
-    }
+        function startChat() {
+            const input = document.getElementById('partnerInput');
+            if (input.value.trim() !== "") {
+                partnerName = input.value.trim();
+            }
 
-    // 관리자 수정 모드 토글
-    function toggleAdminMode() {
-      const editArea = document.getElementById("editScheduleArea");
-      const viewArea = document.getElementById("viewScheduleArea");
+            document.getElementById('partnerTitle').textContent = partnerName;
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
 
-      if (editArea.style.display === "none") {
-        const pw = prompt("관리자 비밀번호를 입력하세요:");
-        if (pw === ADMIN_PW) {
-          editArea.style.display = "block";
-          viewArea.style.display = "none";
-          renderScheduleForm();
-        } else if (pw !== null) {
-          alert("비밀번호가 틀렸습니다.");
+            sendMomMessage(`현우야, 딴거하지말고 오늘할거 빨리 보내놔라.`);
+
+            setInterval(() => {
+                if (todoList.length > 0) {
+                    sendMomMessage(`현우야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
+                }
+            }, 30000); 
         }
-      } else {
-        editArea.style.display = "none";
-        viewArea.style.display = "block";
-        renderScheduleView();
-      }
-    }
 
-    // 수정용 입력 상자 생성
-    function renderScheduleForm() {
-      const scheduleData = getStoredSchedule();
-      const todayList = scheduleData[currentDay] || [];
-      const formDiv = document.getElementById("inputForm");
-      const count = maxPeriods[currentDay];
+        function getCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes(); // <-- 여기에 있던 불필요한 점(.)을 삭제했습니다!
+            const ampm = hours >= 12 ? '오후' : '오전';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${ampm} ${hours}:${minutes}`;
+        }
 
-      let html = "";
-      for (let i = 0; i < count; i++) {
-        html += `
-          <div class="edit-row">
-            <label>${i + 1}교시</label>
-            <input type="text" class="edit-input" id="period_${i}" value="${todayList[i] || ''}" placeholder="과목 입력">
-          </div>
-        `;
-      }
-      formDiv.innerHTML = html;
-    }
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
 
-    // 입력한 내용 저장 (3학년 1반 전용 저장키 사용)
-    function saveSchedule() {
-      const scheduleData = getStoredSchedule();
-      const newList = [];
-      const count = maxPeriods[currentDay];
+        function sendMomMessage(text) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const msgRow = document.createElement('div');
+            msgRow.className = 'message-row mom';
 
-      for (let i = 0; i < count; i++) {
-        newList.push(document.getElementById(`period_${i}`).value.trim());
-      }
+            const momMsg = document.createElement('div');
+            momMsg.className = 'message mom';
+            momMsg.textContent = text;
 
-      scheduleData[currentDay] = newList;
-      localStorage.setItem("hagi_3_1_schedule", JSON.stringify(scheduleData));
+            const timeSpan = document.createElement('div');
+            timeSpan.className = 'message-info';
+            timeSpan.textContent = getCurrentTime();
 
-      alert(`${currentDay}요일 시간표가 저장되었습니다!`);
-      document.getElementById("editScheduleArea").style.display = "none";
-      document.getElementById("viewScheduleArea").style.display = "block";
-      renderScheduleView();
-    }
-  </script>
+            msgRow.appendChild(momMsg);
+            msgRow.appendChild(timeSpan);
+            chatMessages.appendChild(msgRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            showSystemNotification(text);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('todoInput');
+            const chatMessages = document.getElementById('chatMessages');
+            
+            if (input.value.trim() === '') return;
+
+            const text = input.value.trim();
+            input.value = '';
+
+            const msgRow = document.createElement('div');
+            msgRow.className = 'message-row my';
+
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'message-info';
+
+            const readBadge = document.createElement('span');
+            readBadge.className = 'read-badge';
+            readBadge.textContent = '1';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = getCurrentTime();
+
+            infoDiv.appendChild(readBadge);
+            infoDiv.appendChild(timeSpan);
+
+            const myMsg = document.createElement('div');
+            myMsg.className = 'message my';
+            myMsg.textContent = text;
+
+            msgRow.appendChild(infoDiv);
+            msgRow.appendChild(myMsg);
+            chatMessages.appendChild(msgRow);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                readBadge.remove();
+            }, 1000);
+
+            setTimeout(() => {
+                if (text.startsWith('/')) {
+                    sendMomMessage("딴거 하지말고 빨리 해라.");
+                } else if (text.endsWith('끝')) {
+                    let targetTask = text.replace('끝', '').trim();
+                    let index = todoList.indexOf(targetTask);
+
+                    if (index !== -1) {
+                        todoList.splice(index, 1);
+                    }
+
+                    if (todoList.length > 0) {
+                        sendMomMessage(`오케이~ 나머지 ${todoList.join(', ')} 끝내놔`);
+                    } else {
+                        sendMomMessage("수고했어");
+                    }
+                } else {
+                    todoList.push(text);
+                    sendMomMessage(`그래, '${text}' 추가했다. 빨리 시작해라!`);
+                }
+            }, 800);
+        }
+    </script>
+
 </body>
 </html>
