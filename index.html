@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>잔소리 투두리스트</title>
+    
+    <!-- ★ PWA 및 앱 설정 태그 추가 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="잔소리투두">
+    <meta name="theme-color" content="#b2c7d9">
+
     <style>
         body {
             background-color: #b2c7d9;
@@ -232,7 +240,6 @@
         let partnerName = "엄마";
         let userName = "현우";
 
-        // ★ 타이머 설정 (깃허브 배포용: 10분 = 600000ms)
         const NAG_INTERVAL = 10 * 60 * 1000; 
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -241,18 +248,16 @@
             }
         });
 
-        // ★ 받침 유무에 따라 '야' 또는 '아'를 자동으로 결정해 주는 함수
+        // 받침 유무에 따라 '야' 또는 '아'를 자동으로 결정해 주는 함수
         function getParticle(name) {
             if (!name) return "야";
             const lastChar = name[name.length - 1];
             const charCode = lastChar.charCodeAt(0);
             
-            // 한글 유니코드 범위인지 확인 (가 ~ 힣)
             if (charCode < 0xAC00 || charCode > 0xD7A3) return "야";
             
-            // 받침이 있는지 계산 (종성 인덱스)
             const batchimIndex = (charCode - 0xAC00) % 28;
-            return batchimIndex > 0 ? "아" : "야"; // 받침이 있으면 '아', 없으면 '야'
+            return batchimIndex > 0 ? "아" : "야"; 
         }
 
         function showSystemNotification(text) {
@@ -279,11 +284,9 @@
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
 
-            // 받침 자동 판별 적용 ("현우" -> 현우야 / "현욱" -> 현욱아)
             const particle = getParticle(userName);
             sendMomMessage(`${userName}${particle}, 오늘할일 보내라 딴거 하지말고`);
 
-            // 10분마다 잔소리 타이머 실행
             setInterval(() => {
                 if (todoList.length > 0) {
                     const p = getParticle(userName);
