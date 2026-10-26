@@ -209,6 +209,10 @@
         let todoList = [];
         let partnerName = "엄마";
 
+        // ★ 타이머 설정 (깃허브 배포용: 10분 = 600000ms)
+        // 로컬에서 빠르게 테스트하고 싶다면 이 값을 30000(30초)으로 바꿔서 테스트하세요!
+        const NAG_INTERVAL = 10 * 60 * 1000; 
+
         document.addEventListener("DOMContentLoaded", () => {
             if (Notification.permission !== "granted") {
                 Notification.requestPermission();
@@ -236,17 +240,18 @@
 
             sendMomMessage(`현우야, 딴거하지말고 오늘할거 빨리 보내놔라.`);
 
+            // 10분마다 잔소리 타이머 실행
             setInterval(() => {
                 if (todoList.length > 0) {
                     sendMomMessage(`현우야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
                 }
-            }, 30000); 
+            }, NAG_INTERVAL); 
         }
 
         function getCurrentTime() {
             const now = new Date();
             let hours = now.getHours();
-            let minutes = now.getMinutes(); // <-- 여기에 있던 불필요한 점(.)을 삭제했습니다!
+            let minutes = now.getMinutes();
             const ampm = hours >= 12 ? '오후' : '오전';
             hours = hours % 12;
             hours = hours ? hours : 12; 
@@ -316,10 +321,12 @@
             chatMessages.appendChild(msgRow);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
+            // 1초 뒤 '1' 사라짐
             setTimeout(() => {
                 readBadge.remove();
             }, 1000);
 
+            // 엄마의 응답 및 조건별 처리 로직
             setTimeout(() => {
                 if (text.startsWith('/')) {
                     sendMomMessage("딴거 하지말고 빨리 해라.");
