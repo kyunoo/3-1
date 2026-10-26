@@ -197,7 +197,7 @@
 <body>
 
     <div class="app-container">
-        <!-- [화면 1] 대화상대 및 내 이름 설정 화면 (완전 빈칸) -->
+        <!-- [화면 1] 대화상대 및 내 이름 설정 화면 -->
         <div id="setup-screen">
             <h2>대화상대 설정</h2>
             <div class="input-group">
@@ -241,6 +241,20 @@
             }
         });
 
+        // ★ 받침 유무에 따라 '야' 또는 '아'를 자동으로 결정해 주는 함수
+        function getParticle(name) {
+            if (!name) return "야";
+            const lastChar = name[name.length - 1];
+            const charCode = lastChar.charCodeAt(0);
+            
+            // 한글 유니코드 범위인지 확인 (가 ~ 힣)
+            if (charCode < 0xAC00 || charCode > 0xD7A3) return "야";
+            
+            // 받침이 있는지 계산 (종성 인덱스)
+            const batchimIndex = (charCode - 0xAC00) % 28;
+            return batchimIndex > 0 ? "아" : "야"; // 받침이 있으면 '아', 없으면 '야'
+        }
+
         function showSystemNotification(text) {
             if (Notification.permission === "granted") {
                 new Notification(`${partnerName}의 메시지`, {
@@ -254,7 +268,6 @@
             const userInput = document.getElementById('userNameInput');
             const partnerInput = document.getElementById('partnerInput');
             
-            // 입력값이 있으면 그것을 쓰고, 빈칸이면 기본값 유지
             if (userInput.value.trim() !== "") {
                 userName = userInput.value.trim();
             }
@@ -266,11 +279,15 @@
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
 
-            sendMomMessage(`${userName}아, 오늘할일 보내라 딴거 하지말고`);
+            // 받침 자동 판별 적용 ("현우" -> 현우야 / "현욱" -> 현욱아)
+            const particle = getParticle(userName);
+            sendMomMessage(`${userName}${particle}, 오늘할일 보내라 딴거 하지말고`);
 
+            // 10분마다 잔소리 타이머 실행
             setInterval(() => {
                 if (todoList.length > 0) {
-                    sendMomMessage(`${userName}야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
+                    const p = getParticle(userName);
+                    sendMomMessage(`${userName}${p}, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
                 }
             }, NAG_INTERVAL); 
         }
