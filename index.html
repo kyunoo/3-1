@@ -197,16 +197,16 @@
 <body>
 
     <div class="app-container">
-        <!-- [화면 1] 대화상대 및 내 이름 설정 화면 (빈칸 처리) -->
+        <!-- [화면 1] 대화상대 및 내 이름 설정 화면 (완전 빈칸) -->
         <div id="setup-screen">
             <h2>대화상대 설정</h2>
             <div class="input-group">
                 <label>내 이름</label>
-                <input type="text" id="userNameInput" placeholder="본인 이름 입력">
+                <input type="text" id="userNameInput">
             </div>
             <div class="input-group">
                 <label>대화상대 이름</label>
-                <input type="text" id="partnerInput" placeholder="상대방 이름 입력 (예: 엄마)">
+                <input type="text" id="partnerInput">
             </div>
             <button onclick="startChat()">확인</button>
         </div>
@@ -254,7 +254,7 @@
             const userInput = document.getElementById('userNameInput');
             const partnerInput = document.getElementById('partnerInput');
             
-            // 입력한 값이 있으면 적용, 없으면 기본값 유지
+            // 입력값이 있으면 그것을 쓰고, 빈칸이면 기본값 유지
             if (userInput.value.trim() !== "") {
                 userName = userInput.value.trim();
             }
@@ -266,10 +266,8 @@
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
 
-            // 요청하신 첫 메시지 형식 적용
             sendMomMessage(`${userName}아, 오늘할일 보내라 딴거 하지말고`);
 
-            // 10분마다 잔소리 타이머 실행
             setInterval(() => {
                 if (todoList.length > 0) {
                     sendMomMessage(`${userName}야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
