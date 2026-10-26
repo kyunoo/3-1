@@ -27,7 +27,7 @@
             overflow: hidden;
         }
 
-        /* 1. 대화상대 설정 화면 */
+        /* 1. 대화상대 및 내 이름 설정 화면 */
         #setup-screen {
             flex: 1;
             background-color: #ffffff;
@@ -46,18 +46,32 @@
             font-size: 22px;
         }
 
-        #setup-screen input {
+        .input-group {
             width: 80%;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            color: #666;
+            margin-left: 10px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        #setup-screen input {
+            width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 20px;
             outline: none;
             text-align: center;
             font-size: 16px;
+            box-sizing: border-box;
         }
 
         #setup-screen button {
-            width: 85%;
+            width: 80%;
             background-color: #fee500;
             border: none;
             padding: 12px;
@@ -65,6 +79,7 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            margin-top: 10px;
         }
 
         /* 2. 실제 채팅방 화면 (초기엔 숨김) */
@@ -182,10 +197,17 @@
 <body>
 
     <div class="app-container">
-        <!-- [화면 1] 대화상대 설정 화면 -->
+        <!-- [화면 1] 대화상대 및 내 이름 설정 화면 -->
         <div id="setup-screen">
             <h2>대화상대 설정</h2>
-            <input type="text" id="partnerInput" placeholder="대화상대 이름 (예: 엄마)" value="엄마">
+            <div class="input-group">
+                <label>내 이름</label>
+                <input type="text" id="userNameInput" placeholder="내 이름 (예: 현우)" value="현우">
+            </div>
+            <div class="input-group">
+                <label>대화상대 이름</label>
+                <input type="text" id="partnerInput" placeholder="대화상대 이름 (예: 엄마)" value="엄마">
+            </div>
             <button onclick="startChat()">확인</button>
         </div>
 
@@ -208,9 +230,10 @@
     <script>
         let todoList = [];
         let partnerName = "엄마";
+        let userName = "현우";
 
         // ★ 타이머 설정 (깃허브 배포용: 10분 = 600000ms)
-        // 로컬에서 빠르게 테스트하고 싶다면 이 값을 30000(30초)으로 바꿔서 테스트하세요!
+        // 테스트할 때 빠르게 보고 싶다면 30000(30초)으로 변경 가능!
         const NAG_INTERVAL = 10 * 60 * 1000; 
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -229,21 +252,27 @@
         }
 
         function startChat() {
-            const input = document.getElementById('partnerInput');
-            if (input.value.trim() !== "") {
-                partnerName = input.value.trim();
+            const userInput = document.getElementById('userNameInput');
+            const partnerInput = document.getElementById('partnerInput');
+            
+            if (userInput.value.trim() !== "") {
+                userName = userInput.value.trim();
+            }
+            if (partnerInput.value.trim() !== "") {
+                partnerName = partnerInput.value.trim();
             }
 
             document.getElementById('partnerTitle').textContent = partnerName;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
 
-            sendMomMessage(`현우야, 딴거하지말고 오늘할거 빨리 보내놔라.`);
+            // 설정한 내 이름이 들어가도록 첫 메시지 출력
+            sendMomMessage(`${userName}아, 오늘할일 보내라 딴거 하지말고`);
 
             // 10분마다 잔소리 타이머 실행
             setInterval(() => {
                 if (todoList.length > 0) {
-                    sendMomMessage(`현우야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
+                    sendMomMessage(`${userName}야, 아직 ${todoList.join(', ')} 안 끝났잖아! 딴짓하지 말고 빨리 해라.`);
                 }
             }, NAG_INTERVAL); 
         }
